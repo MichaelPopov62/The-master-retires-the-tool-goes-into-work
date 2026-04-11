@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: '/site-kiyv-ts/', 
-})
+  base: "/The-master-retires-the-tool-goes-into-work/",
+});

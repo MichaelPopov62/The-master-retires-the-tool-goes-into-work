@@ -1,8 +1,9 @@
-# City of Kyiv
+# The-master-retires-the-tool-goes-into-work
 
 Single-page application built with React, TypeScript, and Vite.
 
 ## Tech Stack
+
 - HTML
 - CSS
 - TypeScript
@@ -12,6 +13,7 @@ Single-page application built with React, TypeScript, and Vite.
 ## Installation
 
 1. Встановити залежності:
+
 ```bash
 npm install
 
@@ -40,4 +42,5 @@ Author
 mik
 
 GitHub Pages
-https://michaelpopov62.github.io/site-kiyv-ts/
+https://michaelpopov62.github.io/The-master-retires-the-tool-goes-into-work/
+```
