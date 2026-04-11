@@ -1,0 +1,43 @@
+.header {
+  background: var(--color-text);
+  color: var(--color-surface);
+  padding: 1.25rem 12px 1.75rem;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-width: 0;
+}
+
+.tag {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.25rem, 4.5vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  max-width: 40ch;
+}
+
+.lead {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #e0e0e0;
+  max-width: 65ch;
+}
+
+@media (min-width: 480px) {
+  .header {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
