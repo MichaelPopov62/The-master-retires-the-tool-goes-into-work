@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/The-master-retires-the-tool-goes-into-work/",
+  base: "/the-master-retires-the-tool-goes-into-work/",
 });
