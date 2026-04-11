@@ -3,7 +3,7 @@
 - **Базовая валюта расчёта:** гривна (UA).
 - **Расчёты:** производятся **исключительно** в национальной валюте **UAH**. Другие валюты в логике цен и итогов не используются.
 - **Интерфейс:** пользователю показывается **итоговая цифра** и **символ** гривны (**₴**) рядом с числом, без подписи полного названия валюты в каждой строке.
-- **Конфигурация:** см. [`src/config/currency.json`](../src/config/currency.json) (`currency`, `allCalculationsInUah`).
+- **Конфигурация:** см. [`src/utils/currency.json`](../src/utils/currency.json) (`currency`, `allCalculationsInUah`).
 - **JSON-ответы (API и т.п.):** поле **`currency`: `"UAH"`** вместе с числовым **`amount`** (сумма в гривнах).
 
-Кодовый флаг: **`ALL_CALCULATIONS_IN_UAH`** в [`src/currencyMeta.ts`](../src/currencyMeta.ts).
+Кодовый флаг: **`ALL_CALCULATIONS_IN_UAH`** в [`src/utils/currencyMeta.ts`](../src/utils/currencyMeta.ts).

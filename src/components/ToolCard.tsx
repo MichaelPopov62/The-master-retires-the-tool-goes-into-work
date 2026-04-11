@@ -1,13 +1,14 @@
 import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { formatUah } from "../formatCurrency";
 import type { Tool } from "../types";
-import { CONTACT_WHATSAPP_PHONE } from "../toolsData";
+import { formatUah } from "../utils/formatCurrency";
+import { CONTACT_WHATSAPP_PHONE } from "../utils/toolsData";
 import { ResourceBar } from "./ResourceBar";
 import styles from "./ToolCard.module.css";
 
 type ToolCardProps = {
   tool: Tool;
+  onOpenOrder: (toolName: string) => void;
 };
 
 function buildWhatsAppHref(message: string) {
@@ -20,7 +21,7 @@ function buildTelegramShareHref(message: string) {
   return `https://t.me/share/url?url=&text=${text}`;
 }
 
-export function ToolCard({ tool }: ToolCardProps) {
+export function ToolCard({ tool, onOpenOrder }: ToolCardProps) {
   return (
     <article className={styles.card}>
       <h2 className={styles.title}>{tool.name}</h2>
@@ -87,6 +88,13 @@ export function ToolCard({ tool }: ToolCardProps) {
       ) : null}
 
       <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.btnOrder}
+          onClick={() => onOpenOrder(tool.name)}
+        >
+          Заявка в Telegram (форма)
+        </button>
         <a className={styles.btnPrimary} href={buildWhatsAppHref(tool.bookingMessage)}>
           Забронировать в WhatsApp
         </a>

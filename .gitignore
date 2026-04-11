@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Локальные секреты (токен бота и т.д.)
+.env
+.env.*.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

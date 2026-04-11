@@ -2,7 +2,7 @@ import { ALL_CALCULATIONS_IN_UAH, CURRENCY_CONFIG } from "./currencyMeta";
 
 if (!ALL_CALCULATIONS_IN_UAH) {
   throw new Error(
-    "Ожидались расчёты только в UAH (проверьте src/config/currency.json → allCalculationsInUah).",
+    "Ожидались расчёты только в UAH (проверьте src/utils/currency.json → allCalculationsInUah).",
   );
 }
 

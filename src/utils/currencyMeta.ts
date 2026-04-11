@@ -1,4 +1,4 @@
-import currencyJson from "./config/currency.json";
+import currencyJson from "./currency.json";
 
 /**
  * ТЗ — валюта:

@@ -2,7 +2,7 @@ import {
   CONTACT_LOCATION,
   CONTACT_MESSENGERS_DISPLAY,
   CONTACT_PHONE_DISPLAY,
-} from "../toolsData";
+} from "../utils/toolsData";
 import styles from "./Footer.module.css";
 
 export function Footer() {

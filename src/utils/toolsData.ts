@@ -1,8 +1,8 @@
-import type { Tool } from "./types";
+import type { Tool } from "../types";
 
 /**
  * Каталог: все поля `priceUah` и итоги — в гривнах (UAH).
- * См. `ALL_CALCULATIONS_IN_UAH`, `src/config/currency.json`, `docs/CURRENCY-TZ.md`.
+ * См. `ALL_CALCULATIONS_IN_UAH`, `src/utils/currency.json`, `docs/CURRENCY-TZ.md`.
  */
 
 /** Для wa.me: только цифры международного номера, без «+», пробелов и дефисов */

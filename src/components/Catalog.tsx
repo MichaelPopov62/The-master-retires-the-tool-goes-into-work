@@ -1,14 +1,18 @@
-import { formatUah } from "../formatCurrency";
+import { formatUah } from "../utils/formatCurrency";
 import {
   comboGiftDescription,
   comboPriceUah,
   tools,
   toolsTotalPriceUah,
-} from "../toolsData";
+} from "../utils/toolsData";
 import { ToolCard } from "./ToolCard";
 import styles from "./Catalog.module.css";
 
-export function Catalog() {
+type CatalogProps = {
+  onOpenOrder: (toolName: string) => void;
+};
+
+export function Catalog({ onOpenOrder }: CatalogProps) {
   const savings = toolsTotalPriceUah - comboPriceUah;
 
   return (
@@ -24,7 +28,7 @@ export function Catalog() {
 
         <div className={styles.grid}>
           {tools.map((tool) => (
-            <ToolCard key={tool.id} tool={tool} />
+            <ToolCard key={tool.id} tool={tool} onOpenOrder={onOpenOrder} />
           ))}
         </div>
       </section>
