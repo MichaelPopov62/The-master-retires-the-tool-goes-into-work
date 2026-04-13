@@ -67,7 +67,16 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
           toolName: instrument.trim(),
         }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      let data: { ok?: boolean; error?: string };
+      try {
+        data = (await res.json()) as { ok?: boolean; error?: string };
+      } catch {
+        setSubmitState("error");
+        setErrorMessage(
+          "Сервер вернул не JSON (проверьте URL API или откройте сайт через dev-сервер).",
+        );
+        return;
+      }
       if (!res.ok || !data.ok) {
         setSubmitState("error");
         setErrorMessage(data.error ?? "Не удалось отправить заявку");

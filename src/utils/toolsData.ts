@@ -18,6 +18,38 @@ export const CONTACT_PHONE_DISPLAY = "+380 68 908 34 60";
 /** Мессенджеры одной строкой для футера */
 export const CONTACT_MESSENGERS_DISPLAY = "WhatsApp, Telegram";
 
+/**
+ * Важно: в Telegram «имя» (title) и «username» — разные вещи.
+ * Кнопке нужна именно ссылка на username вида `https://t.me/<username>`.
+ * Если при клике открывается «чужой» аккаунт (например, с суффиксом вроде `-s`),
+ * значит у вашего бота ДРУГОЙ username. Откройте бота → профиль → «Поделиться»/«Copy link»
+ * и вставьте ссылку сюда.
+ */
+export const CONTACT_TELEGRAM_BOT_BOOKING_URL =
+  "https://t.me/PMS_MSbot" as const;
+
+/** Допустимые символы в параметре `start` deep link (см. документацию Telegram Bot API). */
+const TELEGRAM_START_PAYLOAD_RE = /^[a-zA-Z0-9_-]+$/;
+
+/**
+ * Черновик сообщения для чата с ботом. Параметр `?text=` в t.me для **ботов** в клиентах Telegram обычно не подставляется в поле ввода (в отличие от людей/каналов), поэтому тот же текст копируют в буфер на клик по кнопке на сайте.
+ */
+export function telegramBookingDraftText(tool: Pick<Tool, "name">): string {
+  return `Здравствуйте! Бронь: ${tool.name}`;
+}
+
+/**
+ * Deep link бота: только `?start=<id>` (латиница). Полное название инструмента бот может вернуть по id через {@link getToolDisplayNameForTelegramStartPayload} или пользователь вставит текст из {@link telegramBookingDraftText}.
+ */
+export function buildTelegramBookingUrl(tool: Pick<Tool, "id">): string {
+  if (!TELEGRAM_START_PAYLOAD_RE.test(tool.id)) {
+    console.warn(
+      `[toolsData] id «${tool.id}» не подходит для Telegram ?start= (нужны A–Z, a–z, 0–9, _, -).`,
+    );
+  }
+  return `${CONTACT_TELEGRAM_BOT_BOOKING_URL}?start=${tool.id}`;
+}
+
 const img = (seed: string, w = 800, h = 520) =>
   `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
@@ -150,6 +182,13 @@ export const tools: Tool[] = [
     },
   },
 ];
+
+/** Название инструмента для ответа бота пользователю по аргументу /start (если id есть в каталоге). */
+export function getToolDisplayNameForTelegramStartPayload(
+  startPayload: string,
+): string | undefined {
+  return tools.find((t) => t.id === startPayload)?.name;
+}
 
 export const toolsTotalPriceUah = tools.reduce((sum, t) => sum + t.priceUah, 0);
 

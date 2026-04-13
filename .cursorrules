@@ -16,7 +16,7 @@
 2. **Список характеристик** — `<ul>` / `<li>` или эквивалентная структурированная разметка.
 3. **Состояние инструмента** — отдельный блок в **рамке** (border/outline), с износом, комплектностью, замечаниями.
 
-Далее на карточке (как в текущем проекте): **галерея Swiper** с фото, **цена** (`formatUah`), опционально **ссылка на видео**, блок действий (**заявка через модалку**, WhatsApp, поделиться в Telegram).
+Далее на карточке (как в текущем проекте): **галерея Swiper** с фото, **цена** (`formatUah`), опционально **ссылка на видео**, блок действий (**заявка через модалку** → `POST /api/order`, **WhatsApp** `wa.me`, **«Забронировать в Telegram»** — см. раздел про Telegram ниже).
 
 ## Индикаторы состояния (progress bars)
 
@@ -27,7 +27,7 @@
 ## Страница товара / каталог (маркетинговые и доверительные блоки)
 
 - **Видео-демонстрация**: короткие ролики ~10 секунд (Telegram, YouTube Shorts и т.п.) — видно включение, отсутствие искр, ровная работа; ссылка или встроенное видео сильно повышают доверие.
-- **Быстрая связь**: у каждого товара — **форма заявки** (модалка → `POST /api/order` → Telegram), плюс ссылки **WhatsApp** и **«Поделиться в Telegram»** (`t.me/share/url`).
+- **Быстрая связь**: у каждого товара — **форма заявки** (модалка → `POST /api/order` → Telegram Bot API), ссылка **WhatsApp** (`wa.me` + `bookingMessage`), кнопка **«Забронировать в Telegram»** (deep link на бота, см. раздел **Telegram**).
 - **Блок «Почему такая цена?»**: кратко — инструмент оригинальный (не подделка из масс-маркета), проходил регулярное ТО; снимает возражение «на рынке дешевле».
 - **Пакетное предложение (Combo)**: блок вида «Заберите всё сразу за [Сумма] и получите в подарок набор расходников (сверла, диски, коронки) или [название крупного чемодана для хранения]».
 
@@ -60,14 +60,22 @@
 
 ## Сборка, деплой и `base` Vite
 
-- Скрипты: **`npm run build`** = `tsc && vite build`; **`npm run deploy`** = сборка + публикация **`dist`** через **gh-pages**.
-- В **`vite.config.ts`** задан **`base`** под путь GitHub Pages (**`/the-master-retires-the-tool-goes-into-work/`**). При смене имени репозитория или при деплое **в корень домена** (например Vercel только для фронта) — **обновить `base`** (часто **`/`**).
-- Статический деплой на **GitHub Pages не обслуживает** папку **`/api`**: serverless работает только на **Vercel** (или ином хостинге с функциями); для формы задать **`VITE_ORDER_API_URL`** на полный URL API.
+- Скрипты: **`npm run build`** = `tsc && vite build`; **`npm run deploy`** = сборка + публикация **`dist`** через **gh-pages**; **`npm run server`** = алиас **`vite`** (как **`npm run dev`**).
+- В **`vite.config.ts`**: **`base`** под GitHub Pages (**`/the-master-retires-the-tool-goes-into-work/`**); при смене репозитория или корневом домене — обновить **`base`** (часто **`/`** на Vercel).
+- **`defineConfig(({ mode }) => …)`**: **`loadEnv(mode, process.cwd(), "")`** подмешивает **`.env`** в **`process.env`**, чтобы dev-middleware видел **`TELEGRAM_*`**.
+- Плагин **`orderApiDevPlugin`** (в том же **`vite.config.ts`**): middleware на **`/api/order`** — **`OPTIONS`** и **`POST`**, вызывает **`handleOrderPayload`** из **`api/orderHandler.ts`** (та же логика, что **`api/order.ts`** на Vercel).
+- **`npm run preview`** раздаёт только **`dist/`** — **`/api/order`** отсутствует.
+- **GitHub Pages** не выполняет **`api/`**; для формы на статике задать **`VITE_ORDER_API_URL`** на задеплоенный **`POST …/api/order`** (например Vercel).
 
-## Данные каталога и WhatsApp
+## Данные каталога, WhatsApp и Telegram (бот)
 
 - В **`toolsData.ts`**: массив **`tools`**, константы **`comboPriceUah`**, **`toolsTotalPriceUah`**, контакты для футера; изображения могут быть **внешними URL** (например заглушки).
-- **`CONTACT_WHATSAPP_PHONE`**: строка из **одних цифр** международного номера **без «+»**, пробелов и дефисов — для корректного **`https://wa.me/...`**.
+- **`CONTACT_WHATSAPP_PHONE`**: строка из **одних цифр** международного номера **без «+»**, пробелов и дефисов — для **`https://wa.me/...`**.
+- **`CONTACT_TELEGRAM_BOT_BOOKING_URL`**: **`https://t.me/<username>`** бота для кнопки **«Забронировать в Telegram»**.
+- У каждого **`Tool`** поле **`id`**: короткий латинский slug для **`?start=`** (символы как в правилах Telegram deep link: латиница, цифры, **`_`**, **`-`**).
+- **`buildTelegramBookingUrl(tool)`** → **`…?start=<id>`**; **`telegramBookingDraftText(tool)`** — текст «Здравствуйте! Бронь: **`<name>`**» для буфера обмена (параметр **`?text=`** у ботов в клиентах Telegram обычно не заполняет поле).
+- В **`ToolCard`**: по клику на ссылку Telegram — **`copyTelegramBookingDraft`**, под кнопкой краткая подсказка (вставка **ctrl+v** в чат бота, телефон и имя, резерв 48 ч).
+- **`getToolDisplayNameForTelegramStartPayload(startPayload)`** — маппинг **`id` → name`** для сценария бота на **`/start <id>`** (при необходимости дублируется в коде бота).
 
 ## Комментарии в коде
 
@@ -89,21 +97,23 @@
 - В интерфейсе суммы выводить через **`formatUah`**: отформатированное число и символ **₴** (не обязательно полная строка `Intl` с названием валюты).
 - Для JSON-ответов API — объект с **`currency: "UAH"`** и числовым **`amount`** (см. **`toMoneyJson`** и **`docs/CURRENCY-TZ.md`**).
 
-## Заявки с сайта и Telegram (Vercel serverless)
+## Заявки с сайта и Telegram (API заявки)
 
-- Backend — **не в `src`**, а в корне репозитория: папка **`/api`**, файл **`api/order.ts`** → эндпоинт **`POST /api/order`** (соглашение Vercel).
-- Тело запроса (JSON): **`name`**, **`phone`**, **`toolName`**. Ответ: **`{ ok: boolean, error?: string }`**. Отправка в чат через **Telegram Bot API** (`sendMessage`, `parse_mode: HTML`, экранирование пользовательского текста в HTML).
-- **CORS** для запросов с другого origin: обработка **`OPTIONS`**, заголовки **`Access-Control-Allow-Origin`**, **`Access-Control-Allow-Methods`**, **`Access-Control-Allow-Headers`**.
-- Секреты **только на сервере**: **`TELEGRAM_BOT_TOKEN`**, **`TELEGRAM_CHAT_ID`**. Не использовать префикс **`VITE_`** для токена бота. Пример переменных — **`.env.example`**; на Vercel — Environment Variables в панели проекта.
-- Для типов и `process.env`: зависимости **`@vercel/node`**, **`@types/node`**; в **`tsconfig.json`** в **`include`** — **`src`** и **`api`**, в **`types`** — **`node`** и **`vite/client`**; **`resolveJsonModule`** для импорта **`currency.json`**.
-- Клиентские переменные окружения с префиксом **`VITE_`** описывать в **`src/vite-env.d.ts`** (**`ImportMetaEnv`**, напр. **`VITE_ORDER_API_URL`**).
-- Если фронт деплоится отдельно (например, GitHub Pages), задать **`VITE_ORDER_API_URL`** с полным URL до **`/api/order`** на домене Vercel.
+- Папка **`api/`**: **`orderHandler.ts`** — **`handleOrderPayload`**, **`parseOrderBodyFromVercel`** (валидация полей, **`sendMessage`** в Telegram, HTML-экранирование); **`order.ts`** — обёртка **Vercel** (`VercelRequest`/`Response`, **CORS**, **`OPTIONS`**, **`POST`**).
+- Локально при **`npm run dev`** / **`npm run server`** тот же **`handleOrderPayload`** вызывается из **middleware** в **`vite.config.ts`** (путь **`/api/order`**), после **`loadEnv`** для **`.env`**.
+- Тело запроса (JSON): **`name`**, **`phone`**, **`toolName`**. Ответ: **`{ ok: boolean, error?: string }`**.
+- **CORS**: **`OPTIONS`**, заголовки **`Access-Control-Allow-*`** (и в Vercel-обёртке, и в dev-middleware).
+- Секреты **только на сервере**: **`TELEGRAM_BOT_TOKEN`**, **`TELEGRAM_CHAT_ID`**. Без префикса **`VITE_`**. Шаблон — **`.env.example`**; на Vercel — переменные окружения проекта.
+- Зависимости: **`@vercel/node`**, **`@types/node`**; **`tsconfig.json`**: **`include`** — **`src`**, **`api`**; **`types`** — **`node`**, **`vite/client`**.
+- Клиент: **`src/utils/orderApi.ts`** — **`getOrderApiUrl()`** (`/api/order` или **`VITE_ORDER_API_URL`**); **`vite-env.d.ts`** — **`VITE_ORDER_API_URL`**.
+- Фронт отдельно от API (GitHub Pages + Vercel): обязательно **`VITE_ORDER_API_URL`** на полный URL **`/api/order`**.
+- **`OrderModal`**: при не-JSON ответе — отдельное сообщение об ошибке (не путать с сетевым сбоем).
 
 ## Модальное окно заказа
 
-- Компонент **`OrderModal`** в **`src/components/`**: поля имя, телефон, название инструмента; **`fetch`** на **`getOrderApiUrl()`**; обработка загрузки, успеха и ошибки; закрытие по Escape и клику по фону; **a11y**: `role="dialog"`, `aria-modal`, фокус на первом поле при открытии.
-- Состояние открытия и выбранного инструмента держать в **`App`**, пропсы **`onOpenOrder`** пробрасывать через **`Catalog`** в **`ToolCard`**.
-- У карточки — кнопка открытия модалки (наряду с ссылками WhatsApp / «Поделиться в Telegram»).
+- Компонент **`OrderModal`** в **`src/components/`**: поля имя, телефон, название инструмента; **`fetch`** на **`getOrderApiUrl()`**; разбор JSON ответа с **`try/catch`**; состояния загрузки, успеха, ошибки; закрытие по Escape и клику по фону; **a11y**: `role="dialog"`, `aria-modal`, **`aria-describedby`** при необходимости, фокус на первом поле при открытии.
+- Состояние модалки и выбранного инструмента — в **`App`**, **`onOpenOrder`** через **`Catalog`** в **`ToolCard`**.
+- У **`ToolCard`**: кнопка модалки, ссылка WhatsApp, блок Telegram (ссылка **`buildTelegramBookingUrl`**, **`aria-describedby`** на текст подсказки).
 
 ## Адаптивность
 
