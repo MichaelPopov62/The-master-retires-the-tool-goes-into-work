@@ -53,6 +53,11 @@ export function buildTelegramBookingUrl(tool: Pick<Tool, "id">): string {
 const img = (seed: string, w = 800, h = 520) =>
   `https://picsum.photos/seed/${seed}/${w}/${h}`;
 
+const fromPublic = (pathFromPublicRoot: string) => {
+  const trimmed = pathFromPublicRoot.replace(/^\/+/, "");
+  return `${import.meta.env.BASE_URL}${trimmed}`;
+};
+
 export const tools: Tool[] = [
   {
     id: "perforator",
@@ -179,6 +184,40 @@ export const tools: Tool[] = [
       completeness:
         "Мешок многоразовый, HEPA-кассета, насадки для пола и щели.",
       remarks: "Корпус без трещин, всасывание стабильное.",
+    },
+  },
+  {
+    id: "wagner-wall-sprayer-w450",
+    name: "Wagner WallSprayer W 450 — електрична система розпилення фарби для внутрішніх робіт",
+    priceUah: 4500,
+    imageUrls: [
+      fromPublic("images/tools/soap-dispenser-and-compressor.webp"),
+      fromPublic("images/tools/characteristics.webp"),
+      fromPublic("images/tools/a set of paintbrushes.webp"),
+      fromPublic("images/tools/nameplate.webp"),
+    ],
+    bookingMessage:
+      "Здравствуйте! Хочу забронировать Wagner WallSprayer W 450 из вашего каталога (мастер на пенсии).",
+    characteristics: [
+      { label: "Повна назва", value: "Wagner Wall Sprayer W 450" },
+      { label: "Технологія", value: "HVLP (High Volume Low Pressure)" },
+      { label: "Потужність", value: "460 Вт" },
+      { label: "Продуктивність", value: "до 230 мл/хв (регулюється)" },
+      { label: "Швидкість", value: "≈15 м² за 10 хв" },
+      { label: "Обʼєм резервуара", value: "1,3 л" },
+      { label: "Довжина повітряного шланга", value: "1,8 м" },
+      { label: "Вага", value: "2 кг" },
+      { label: "Максимальна вʼязкість", value: "3400 мПа·с" },
+    ],
+    state: {
+      resourcePercentRemaining: 90,
+      resourceScaleLabel: "Ресурс інструмента",
+      wearCaption:
+        "10% знос — для внутрішніх робіт, без падінь та перегріву (актуалізуйте під ваш реальний стан).",
+      completeness:
+        "Базовий блок (турбіна), насадка I-Spray з бачком 1,3 л, повітряний шланг, ремінь, заливна воронка, палка-мішалка, інструкція, набір запасних ущільнювачів.",
+      remarks:
+        "Під густі інтерʼєрні фарби. Для лаків/емалей може знадобитися додаткова насадка Wood & Metal.",
     },
   },
 ];

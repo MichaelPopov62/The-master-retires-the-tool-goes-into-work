@@ -70,6 +70,7 @@
 ## Данные каталога, WhatsApp и Telegram (бот)
 
 - В **`toolsData.ts`**: массив **`tools`**, константы **`comboPriceUah`**, **`toolsTotalPriceUah`**, контакты для футера; изображения могут быть **внешними URL** (например заглушки).
+- Для изображений из **`public/`** (особенно при GitHub Pages с `base`) использовать URL через **`import.meta.env.BASE_URL`** (в проекте это helper `fromPublic(...)` в `src/utils/toolsData.ts`), а не абсолютные пути вида `/images/...`.
 - **`CONTACT_WHATSAPP_PHONE`**: строка из **одних цифр** международного номера **без «+»**, пробелов и дефисов — для **`https://wa.me/...`**.
 - **`CONTACT_TELEGRAM_BOT_BOOKING_URL`**: **`https://t.me/<username>`** бота для кнопки **«Забронировать в Telegram»**.
 - У каждого **`Tool`** поле **`id`**: короткий латинский slug для **`?start=`** (символы как в правилах Telegram deep link: латиница, цифры, **`_`**, **`-`**).
@@ -87,6 +88,7 @@
 - Вспомогательная логика и данные — в **`src/utils/`**:
   - **`currency.json`**, **`currencyMeta.ts`**, **`formatCurrency.ts`** — валюта и формат сумм;
   - **`toolsData.ts`** — каталог инструментов и контакты для футера/WhatsApp;
+  - **`orderValidation.ts`** — Yup-схема + санитизация (общая для фронта/бэка);
   - **`orderApi.ts`** — базовый URL для отправки заявки (`/api/order` или `VITE_ORDER_API_URL`).
 - Разметка и UI — в **`src/components/`** (в т.ч. модальное окно заказа).
 
@@ -102,8 +104,14 @@
 - Папка **`api/`**: **`orderHandler.ts`** — **`handleOrderPayload`**, **`parseOrderBodyFromVercel`** (валидация полей, **`sendMessage`** в Telegram, HTML-экранирование); **`order.ts`** — обёртка **Vercel** (`VercelRequest`/`Response`, **CORS**, **`OPTIONS`**, **`POST`**).
 - Локально при **`npm run dev`** / **`npm run server`** тот же **`handleOrderPayload`** вызывается из **middleware** в **`vite.config.ts`** (путь **`/api/order`**), после **`loadEnv`** для **`.env`**.
 - Тело запроса (JSON): **`name`**, **`phone`**, **`toolName`**. Ответ: **`{ ok: boolean, error?: string }`**.
+- Валидация и санитизация (общая для фронта и бэка): **`src/utils/orderValidation.ts`** (Yup-схема `orderPayloadSchema` + `validateOrderPayload`).
+- Поле **`name`**: допускается только **кириллица** (укр/рос), пробел, дефис и апостроф; латиница считается ошибкой.
 - **CORS**: **`OPTIONS`**, заголовки **`Access-Control-Allow-*`** (и в Vercel-обёртке, и в dev-middleware).
 - Секреты **только на сервере**: **`TELEGRAM_BOT_TOKEN`**, **`TELEGRAM_CHAT_ID`**. Без префикса **`VITE_`**. Шаблон — **`.env.example`**; на Vercel — переменные окружения проекта.
+- Опционально (бизнес-валидации на сервере): проверка **Telegram WebApp `initData`** и лимиты через env:
+  - `REQUIRE_TELEGRAM_INIT_DATA=true`
+  - `TELEGRAM_INITDATA_MAX_AGE_SEC=86400`
+  - `ORDER_LIMIT_PER_TG_USER_PER_DAY=3`
 - Зависимости: **`@vercel/node`**, **`@types/node`**; **`tsconfig.json`**: **`include`** — **`src`**, **`api`**; **`types`** — **`node`**, **`vite/client`**.
 - Клиент: **`src/utils/orderApi.ts`** — **`getOrderApiUrl()`** (`/api/order` или **`VITE_ORDER_API_URL`**); **`vite-env.d.ts`** — **`VITE_ORDER_API_URL`**.
 - Фронт отдельно от API (GitHub Pages + Vercel): обязательно **`VITE_ORDER_API_URL`** на полный URL **`/api/order`**.
@@ -112,6 +120,7 @@
 ## Модальное окно заказа
 
 - Компонент **`OrderModal`** в **`src/components/`**: поля имя, телефон, название инструмента; **`fetch`** на **`getOrderApiUrl()`**; разбор JSON ответа с **`try/catch`**; состояния загрузки, успеха, ошибки; закрытие по Escape и клику по фону; **a11y**: `role="dialog"`, `aria-modal`, **`aria-describedby`** при необходимости, фокус на первом поле при открытии.
+- UX-валидация: после `blur` поле подсвечивается бордером — **красный** при ошибке, **зелёный** при корректном вводе (на базе Yup `validateAt`).
 - Состояние модалки и выбранного инструмента — в **`App`**, **`onOpenOrder`** через **`Catalog`** в **`ToolCard`**.
 - У **`ToolCard`**: кнопка модалки, ссылка WhatsApp, блок Telegram (ссылка **`buildTelegramBookingUrl`**, **`aria-describedby`** на текст подсказки).
 

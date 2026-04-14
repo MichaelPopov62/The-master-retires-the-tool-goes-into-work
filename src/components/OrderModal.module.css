@@ -95,6 +95,14 @@
   box-sizing: border-box;
 }
 
+.inputOk {
+  border-color: #1b7f2a;
+}
+
+.inputBad {
+  border-color: #8b0000;
+}
+
 .input:focus {
   outline: 2px solid var(--color-accent);
   outline-offset: 1px;
