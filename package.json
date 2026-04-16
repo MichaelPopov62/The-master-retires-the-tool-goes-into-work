@@ -21,6 +21,7 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
+    "modern-normalize": "^3.0.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "swiper": "^12.1.3",
