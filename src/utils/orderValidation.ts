@@ -15,7 +15,7 @@ export function sanitizePlainText(value: unknown): string {
   if (typeof value !== "string") {
     return "";
   }
-  // Не даём инъектить HTML/теги в Telegram HTML parse_mode.
+  // Убираем HTML-теги из текста, чтобы пользователь не мог вставить разметку в сообщение Telegram.
   const withoutTags = value.replaceAll(/<[^>]*>/g, " ");
   return withoutTags.replaceAll(/\s+/g, " ").trim();
 }
@@ -28,6 +28,7 @@ function normalizePhone(value: unknown): string {
 
 const MAX_FIELD = 400;
 
+// Схема валидации/нормализации заявки: приводит поля к безопасному виду и проверяет ограничения.
 export const orderPayloadSchema: yup.ObjectSchema<OrderPayload> = yup
   .object({
     name: yup
@@ -61,6 +62,7 @@ export const orderPayloadSchema: yup.ObjectSchema<OrderPayload> = yup
   .required();
 
 export async function validateOrderPayload(input: unknown): Promise<OrderPayload> {
+  // Валидация всего payload перед отправкой: обрезаем/нормализуем поля и выкидываем лишнее.
   return await orderPayloadSchema.validate(input, {
     abortEarly: true,
     stripUnknown: true,

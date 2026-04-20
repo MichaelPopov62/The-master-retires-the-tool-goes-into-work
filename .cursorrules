@@ -70,6 +70,7 @@
 ## Данные каталога, WhatsApp и Telegram (бот)
 
 - В **`toolsData.ts`**: массив **`tools`**, константы **`comboPriceUah`**, **`toolsTotalPriceUah`**, контакты для футера; изображения могут быть **внешними URL** (например заглушки).
+- **`comboPriceUah`** должна вычисляться от **`toolsTotalPriceUah`** как **скидка 10%**, и быть **целым числом (UAH без дробей)** — не задавать статичной цифрой.
 - Для изображений из **`public/`** (особенно при GitHub Pages с `base`) использовать URL через **`import.meta.env.BASE_URL`** (в проекте это helper `fromPublic(...)` в `src/utils/toolsData.ts`), а не абсолютные пути вида `/images/...`.
 - **`CONTACT_WHATSAPP_PHONE`**: строка из **одних цифр** международного номера **без «+»**, пробелов и дефисов — для **`https://wa.me/...`**.
 - **`CONTACT_TELEGRAM_BOT_BOOKING_URL`**: **`https://t.me/<username>`** бота для кнопки **«Забронировать в Telegram»**.

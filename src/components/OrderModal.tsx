@@ -16,16 +16,21 @@ type FieldKey = "name" | "phone" | "toolName";
 export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
   const titleId = useId();
   const nameRef = useRef<HTMLInputElement>(null);
+  // Значения полей формы (контролируемые инпуты).
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [instrument, setInstrument] = useState("");
+  // Состояние отправки: нужно для блокировки повторной отправки и показа успеха/ошибки.
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  // Общая ошибка отправки/валидации (для баннера под формой).
   const [errorMessage, setErrorMessage] = useState("");
+  // Какие поля пользователь уже "трогал" (blur) — чтобы не показывать статус до взаимодействия.
   const [touched, setTouched] = useState<Record<FieldKey, boolean>>({
     name: false,
     phone: false,
     toolName: false,
   });
+  // Текст ошибки для каждого поля (результат валидации конкретного поля).
   const [fieldError, setFieldError] = useState<Record<FieldKey, string>>({
     name: "",
     phone: "",
@@ -36,6 +41,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
     if (!open) {
       return;
     }
+    // При открытии модалки сбрасываем форму и фокусируем поле имени.
     setName("");
     setPhone("");
     setInstrument(toolName);
@@ -52,6 +58,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
     key: FieldKey,
   ) {
     try {
+      // Точечная валидация одного поля (используем yup.validateAt).
       await orderPayloadSchema.validateAt(key, next);
       setFieldError((s) => ({ ...s, [key]: "" }));
     } catch (e) {
@@ -64,6 +71,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
   }
 
   function inputClass(key: FieldKey): string {
+    // Вычисляем CSS-класс по состоянию touched + наличие ошибки валидации.
     if (!touched[key]) {
       return styles.input;
     }
@@ -77,6 +85,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
     if (!open) {
       return;
     }
+    // UX: закрытие по Escape и блокировка прокрутки под модалкой.
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
@@ -92,6 +101,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
   }, [open, onClose]);
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
+    // Обработчик "сохранения" формы: валидируем payload и отправляем на API.
     e.preventDefault();
     if (submitState === "loading") {
       return;
@@ -99,6 +109,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
     setSubmitState("loading");
     setErrorMessage("");
     try {
+      // Полная валидация всех полей перед отправкой (с нормализацией/санитайзингом).
       const payload = await validateOrderPayload({
         name,
         phone,
@@ -145,6 +156,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
       className={styles.backdrop}
       role="presentation"
       onMouseDown={(e) => {
+        // Закрываем модалку кликом по подложке (но не по самому диалогу).
         if (e.target === e.currentTarget) {
           onClose();
         }
@@ -181,6 +193,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
                 required
                 value={name}
                 onChange={(e) => {
+                  // Обработчик изменения ввода: обновляем state и (после blur) валидируем "на лету".
                   const v = e.target.value;
                   setName(v);
                   if (touched.name) {
@@ -188,6 +201,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
                   }
                 }}
                 onBlur={() => {
+                  // Отмечаем поле как "трогали" и запускаем валидацию при уходе фокуса.
                   setTouched((s) => ({ ...s, name: true }));
                   void validateField({ name, phone, toolName: instrument }, "name");
                 }}
@@ -203,6 +217,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
                 required
                 value={phone}
                 onChange={(e) => {
+                  // Обработчик изменения ввода телефона: обновляем state и валидируем при необходимости.
                   const v = e.target.value;
                   setPhone(v);
                   if (touched.phone) {
@@ -210,6 +225,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
                   }
                 }}
                 onBlur={() => {
+                  // Валидация телефона при blur, чтобы показать ошибку пользователю.
                   setTouched((s) => ({ ...s, phone: true }));
                   void validateField({ name, phone, toolName: instrument }, "phone");
                 }}
@@ -223,6 +239,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
                 required
                 value={instrument}
                 onChange={(e) => {
+                  // Обработчик изменения названия инструмента: обновляем state и валидируем после blur.
                   const v = e.target.value;
                   setInstrument(v);
                   if (touched.toolName) {
@@ -230,6 +247,7 @@ export function OrderModal({ open, toolName, onClose }: OrderModalProps) {
                   }
                 }}
                 onBlur={() => {
+                  // Валидация названия инструмента при blur.
                   setTouched((s) => ({ ...s, toolName: true }));
                   void validateField({ name, phone, toolName: instrument }, "toolName");
                 }}

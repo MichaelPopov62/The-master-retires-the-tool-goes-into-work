@@ -84,39 +84,12 @@ export const tools: Tool[] = [
       remarks: "Кнопки и кабель целые, люфта патрона нет.",
     },
   },
-  {
-    id: "shurupovert",
-    name: "Аккумуляторный ударный шуруповёрт 18 В",
-    priceUah: 8_900,
-    imageUrls: [img("tool-shur-1"), img("tool-shur-2"), img("tool-shur-3")],
-    demoVideoUrl: "https://www.youtube.com/shorts/",
-    bookingMessage:
-      "Добрый день! Забронировать ударный шуруповёрт 18 В из каталога мастера.",
-    characteristics: [
-      {
-        label: "Напряжение",
-        value: "18 В (платформа аккумуляторов одного бренда)",
-      },
-      { label: "Крутящий момент", value: "до 60 Н·м" },
-      { label: "Аккумуляторы", value: "2×5 А·ч Li-ion" },
-      {
-        label: "Особенности",
-        value: "ударный режим, подсветка, реверс, 2 скорости",
-      },
-      { label: "Патрон", value: "1,5–13 мм, быстрозажимной" },
-    ],
-    state: {
-      resourcePercentRemaining: 88,
-      resourceScaleLabel: "Ресурс инструмента",
-      wearCaption: "12% износ — монтаж мебели и перегородок, без перегруза",
-      completeness: "Два АКБ, зарядное устройство, кейс, бита РН2.",
-    },
-  },
+
   {
     id: "bolgarka",
     name: "УШМ (болгарка) 125 мм, 1400 Вт",
     priceUah: 5_500,
-    imageUrls: [img("tool-usm-1"), img("tool-usm-2"), img("tool-usm-3")],
+    imageUrls: [],
     bookingMessage:
       "Здравствуйте! Хочу забронировать УШМ 125 мм из объявления о распродаже инструмента.",
     characteristics: [
@@ -138,35 +111,12 @@ export const tools: Tool[] = [
       remarks: "Щётки не искрят, подшипники без гула.",
     },
   },
-  {
-    id: "laser-level",
-    name: "Лазерный уровень 2×360° (линии + вертикаль)",
-    priceUah: 7_200,
-    imageUrls: [img("tool-las-1"), img("tool-las-2"), img("tool-las-3")],
-    bookingMessage:
-      "Добрый день! Забронировать лазерный уровень 2×360° из вашего каталога.",
-    characteristics: [
-      { label: "Лучи", value: "горизонталь 360°, вертикаль 360°" },
-      { label: "Точность", value: "±2 мм на 10 м" },
-      {
-        label: "Компенсация",
-        value: "автоматическая, с индикацией вне диапазона",
-      },
-      { label: "Крепление", value: 'магнитное основание, резьба 1/4"' },
-      { label: "Питание", value: "Li-ion, зарядка USB-C" },
-    ],
-    state: {
-      resourcePercentRemaining: 90,
-      resourceScaleLabel: "Ресурс инструмента",
-      wearCaption: "10% износ — в основном внутренняя отделка",
-      completeness: "Прибор, штатив-мини, мишень, чехол.",
-    },
-  },
+
   {
     id: "pylesos",
     name: "Строительный пылесос L-класс, 1400 Вт",
     priceUah: 9_800,
-    imageUrls: [img("tool-pyl-1"), img("tool-pyl-2"), img("tool-pyl-3")],
+    imageUrls: [],
     bookingMessage:
       "Здравствуйте! Хочу забронировать строительный пылесос L-класс из объявления.",
     characteristics: [
@@ -232,7 +182,7 @@ export function getToolDisplayNameForTelegramStartPayload(
 export const toolsTotalPriceUah = tools.reduce((sum, t) => sum + t.priceUah, 0);
 
 /** Пакет «всё сразу» — ниже суммы по отдельности (грн) */
-export const comboPriceUah = 39_900;
+export const comboPriceUah = Math.round(toolsTotalPriceUah * 0.9);
 
 export const comboGiftDescription =
   "набор расходников (сверла по бетону 6–10 мм, пару дисков по металлу) или большой чемодан для хранения инструмента";
