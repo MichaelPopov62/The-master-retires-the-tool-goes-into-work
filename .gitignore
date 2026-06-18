@@ -12,6 +12,8 @@ node_modules
 dist
 dist-ssr
 *.local
+.cursorrules
+.cursor/
 
 # Локальные секреты (токен бота и т.д.)
 .env
